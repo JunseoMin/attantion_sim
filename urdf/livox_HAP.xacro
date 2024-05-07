@@ -14,8 +14,8 @@
   </xacro:macro>
   
   <xacro:macro name="Livox_Hap_gazebo" params="name:=livox_HAP">
-    <gazebo reference="${name}">
-      <sensor type="ray" name="laser_${name}">
+    <gazebo reference="livox_HAP">
+      <sensor type="ray" name="laser_livox_HAP">
         <pose>0 0 0 0 0 0</pose>
         <visualize>true</visualize>
         <update_rate>10</update_rate>
@@ -83,17 +83,18 @@
       <xacro:null_inertial/>
     </link>
 
-    <joint name="base_link_to_Livox_HAP_joint" type="fixed">
+    <joint name="Livox_HAP_base_to_Livox_HAP_joint" type="fixed">
       <parent link="Livox_HAP_base"/>
       <child link="Livox_HAP"/>
       <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
     </joint>
+    
     <xacro:Livox_Hap_gazebo name="livox_HAP"/>
   </xacro:macro>
 
   <xacro:Livox_HAP name="livox_HAP"/>
 
-  <joint name="lidar_joint" type="fixed">
+  <joint name="base_link_to_lidar_joint" type="fixed">
     <origin xyz="0.0 0.0 0.5" rpy="0.0 0.0 1.58"/>
     <parent link="base_link"/>
     <child link="Livox_HAP_base"/>
