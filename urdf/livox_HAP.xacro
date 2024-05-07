@@ -1,9 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
-     Commit Version: 1.6.0-1-g15f4949  Build Version: 1.6.7594.29634
-     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
-<robot xmlns:xacro = "http://www.ros.org.wiki/xacro">
-  <!-- start here to *  -->
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:property name="M_PI" value="3.14159"/> 
+  <xacro:property name="laser_min_range" value="0.1"/>
+  <xacro:property name="laser_max_range" value="200.0"/>
+  <xacro:property name="ros_topic" value="scan"/>
+  <xacro:property name="samples" value="45300"/>
+  <xacro:property name="downsample" value="0"/>
+  
   <xacro:macro name="null_inertial">
     <inertial>
       <mass value="0.1"/>
@@ -12,88 +16,85 @@
           izz="0.01"/>
     </inertial>
   </xacro:macro>
-  
-  <xacro:macro name="Livox_Hap_gazebo" params="name:=livox_HAP">
-    <gazebo reference="livox_HAP">
-      <sensor type="ray" name="laser_livox_HAP">
+  <xacro:macro name="Livox_Mid_gazebo_sensor" params="visualize:=True update_rate:=10 resolution:=0.002 noise_mean:=0.0 noise_stddev:=0.01 name:=livox">
+    <gazebo reference="${name}">
+      <sensor type="ray" name="laser_${name}">
         <pose>0 0 0 0 0 0</pose>
-        <visualize>true</visualize>
-        <update_rate>10</update_rate>
+        <visualize>${visualize}</visualize>
+        <update_rate>${update_rate}</update_rate>
         <!-- This ray plgin is only for visualization. -->
         <plugin name="gazebo_ros_laser_controller" filename="liblivox_laser_simulation.so">
-			  <ray>
-          <scan>
-            <horizontal>
-              <samples>100</samples>
-              <resolution>1</resolution>
-		    		  <min_angle>-1.047196667</min_angle>
-		    		  <max_angle>1.047196667</max_angle>
-            </horizontal>
-
-            <vertical>
-		    		  <samples>50</samples>
-		    		  <resolution>1</resolution>
-		    		  <min_angle>-0.218165972</min_angle>
-		    		  <max_angle>0.218165972</max_angle>
-		    		</vertical>
-          </scan>
-
-          <range>
-		    		<min>0.1</min>
-		    		<max>200.0</max>
-		    		<resolution>0.002</resolution>
-          </range>
-
-          <noise>
-		    		<type>gaussian</type>
-		    		<mean>0.0</mean>
-		    		<stddev>0.01</stddev>
-		    	</noise>
-        </ray>
+			
+      <ray>
+			  <scan>
+				<horizontal>
+				<samples>100</samples>
+				<resolution>1</resolution>
+				<min_angle>${-60/180*M_PI}</min_angle>
+				<max_angle>${60/180*M_PI}</max_angle>
+				</horizontal>
+				<vertical>
+				<samples>50</samples>
+				<resolution>1</resolution>
+				<min_angle>${-12.5/180*M_PI}</min_angle>
+				<max_angle>${12.5/180*M_PI}</max_angle>
+				</vertical>
+			  </scan>
+			  <range>
+				<min>${laser_min_range}</min>
+				<max>${laser_max_range}</max>
+				<resolution>${resolution}</resolution>
+			  </range>
+			  <noise>
+				<type>gaussian</type>
+				<mean>${noise_mean}</mean>
+				<stddev>${noise_stddev}</stddev>
+			  </noise>
+			</ray>
 
       <visualize>true</visualize>
-		  <samples>45300</samples>
+		  <samples>${samples}</samples>
 		  <downsample>1</downsample>
-		  <csv_file_name>package://immersion_sim/scan_mode/HAP.csv</csv_file_name>
-		  <ros_topic>scan</ros_topic>
-      </plugin>
+		  <!-- <csv_file_name>package://immersion_sim/scan_mode/HAP.csv</csv_file_name> -->
+		  <ros_topic>${ros_topic}</ros_topic>
+        </plugin>
       </sensor>
     </gazebo>
   </xacro:macro>
 
-  <xacro:macro name="Livox_HAP" params="visualize:=True name:=livox">
-    <link name="Livox_HAP_base">
+
+  <xacro:macro name="Livox_Mid40" params="visualize:=True name:=livox">
+    <link name="lidar_base">
       <xacro:null_inertial/>
       <visual> 
-        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+        <origin xyz="0.00 0 0.0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="package://immersion_sim/meshes/livox_mid40.dae">
+          <mesh filename="package://livox_laser_simulation/meshes/livox_mid40.dae">
           </mesh>
         </geometry>
       </visual>
 
       <collision>
-		    <origin xyz="0.0 0.0 0.0" rpy="0 0 0" /> <geometry> 
-        <mesh filename="package://immersion_sim/meshes/livox_mid40.dae"> </mesh>
-        </geometry>
+		  <origin xyz="0 0 0" rpy="0 0 0" /> <geometry> 
+        <mesh filename="package://livox_laser_simulation/meshes/livox_mid40.dae"> </mesh>
+      </geometry>
       </collision>
     </link>
 
-    <link name="Livox_HAP">
+    <link name="lidar">
       <xacro:null_inertial/>
     </link>
 
-    <joint name="Livox_HAP_base_to_Livox_HAP_joint" type="fixed">
-      <parent link="Livox_HAP_base"/>
-      <child link="Livox_HAP"/>
-      <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+    <joint name="lidar_to_lidar_base_joint" type="fixed">
+      <parent link="lidar_base"/>
+      <child link="lidar"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 1.6"/>
     </joint>
-    
-    <xacro:Livox_Hap_gazebo name="livox_HAP"/>
+    <xacro:Livox_Mid_gazebo_sensor name="lidar" visualize="true"/>
   </xacro:macro>
+  <xacro:Livox_Mid40 name="hap"/>
 
-  <xacro:Livox_HAP name="livox_HAP"/>
-
+  
   <joint name="base_link_to_lidar_joint" type="fixed">
     <origin xyz="0.0 0.0 0.5" rpy="0.0 0.0 1.58"/>
     <parent link="base_link"/>
@@ -101,4 +102,5 @@
     <axis xyz="0.0 0.0 0.0"/>
     <limit lower="0.0" upper="0.0" effort="0.0" velocity="0.0"/>
   </joint>
+
 </robot>
