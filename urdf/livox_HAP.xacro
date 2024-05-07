@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-1-g15f4949  Build Version: 1.6.7594.29634
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot xmlns:xacro = "http://www.ros.org.wiki/xacro">
+  <!-- start here to *  -->
+  <xacro:macro name="null_inertial">
+    <inertial>
+      <mass value="0.1"/>
+    <inertia ixx="0.01" ixy="0" ixz="0"
+          iyy="0.01" iyz="0"
+          izz="0.01"/>
+    </inertial>
+  </xacro:macro>
+  
+  <xacro:property name="M_PI" value="3.14159"/> 
+  <xacro:property name="laser_min_range" value="0.1"/>
+  <xacro:property name="laser_max_range" value="200.0"/>
+  <xacro:property name="ros_topic" value="scan"/>
+  <xacro:property name="samples" value="45300"/>
+  <xacro:property name="downsample" value="1"/>
+
+  <xacro:macro name="Livox_Hap_gazebo" params="visualize:=True update_rate:=10 resolution:=0.002 noise_mean:=0.0 noise_stddev:=0.01 name:=livox_HAP">
+    <gazebo reference="${name}">
+      <sensor name="lidar_hap" type="ray">
+      <pose> 0 0 0 0 0 0 </pose>
+      <visualize>true</visualize>
+      <update_rate>10</update_rate>
+      </sensor>
+            
+
+    </gazebo>
+  </xacro:macro>
+
+  <!-- <xacro:macro name="Livox_Mid_gazebo_sensor" params="visualize:=True update_rate:=10 resolution:=0.002 noise_mean:=0.0 noise_stddev:=0.01 name:=livox">
+    <gazebo reference="${name}">
+      <sensor type="ray" name="laser_${name}">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>${visualize}</visualize>
+        <update_rate>${update_rate}</update_rate>
+        <plugin name="gazebo_ros_laser_controller" filename="liblivox_laser_simulation.so">
+			<ray>
+			  <scan>
+				<horizontal>
+				<samples>100</samples>
+				<resolution>1</resolution>
+				<min_angle>${-60/180*M_PI}</min_angle>
+				<max_angle>${60/180*M_PI}</max_angle>
+				</horizontal>
+				<vertical>
+				<samples>50</samples>
+				<resolution>1</resolution>
+				<min_angle>${-12.5/180*M_PI}</min_angle>
+				<max_angle>${12.5/180*M_PI}</max_angle>
+				</vertical>
+			  </scan>
+			  <range>
+				<min>${laser_min_range}</min>
+				<max>${laser_max_range}</max>
+				<resolution>${resolution}</resolution>
+			  </range>
+			  <noise>
+				<type>gaussian</type>
+				<mean>${noise_mean}</mean>
+				<stddev>${noise_stddev}</stddev>
+			  </noise>
+			</ray>
+          <visualize>${visualize}</visualize>
+		  <samples>${samples}</samples>
+		  <downsample>${downsample}</downsample>
+		  <csv_file_name>package://livox_laser_simulation/scan_mode/HAP.csv</csv_file_name>
+		  <ros_topic>${ros_topic}</ros_topic>
+        </plugin>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="Livox_Mid40" params="visualize:=True name:=livox">
+    <link name="${name}_base">
+      <xacro:null_inertial/>
+      <visual> 
+        <origin xyz="0.00 0 0.0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://livox_laser_simulation/meshes/livox_mid40.dae">
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision>
+		  <origin xyz="0 0 0" rpy="0 0 0" /> <geometry> <mesh 
+		  filename="package://livox_laser_simulation/meshes/livox_mid40.dae"> 
+		  </mesh> </geometry>
+      </collision>
+    </link>
+    <link name="${name}">
+      <xacro:null_inertial/>
+    </link>
+
+    <joint name="${name}_to_${name}_base_joint" type="fixed">
+      <parent link="${name}_base"/>
+      <child link="${name}"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 1.6"/>
+    </joint>
+    <xacro:Livox_Mid_gazebo_sensor name="${name}" visualize="${visualize}"/>
+  </xacro:macro>
+  
+  <xacro:Livox_Mid40 name="livox"/> -->
+
+  <!-- ************************************ -->
+  <xacro:macro name="inertial_matrix" params="mass">
+    <inertial>
+      <mass value="${mass}" />
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="0.5" iyz="0.0" izz="1.0" />
+    </inertial>
+  </xacro:macro>
+  
+  <material name="Black">
+      <color rgba="0 0 0 1"/>
+  </material>
+
+  <material name="White">
+      <color rgba="1 1 1 1"/>
+  </material>
+
+  <material name="Blue">
+      <color rgba="0 0 1 1"/>
+  </material>
+
+  <material name="Red">
+      <color rgba="1 0 0 1"/>
+  </material>
+
+  <joint name="lidar_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.5" rpy="0.0 0.0 1.58"/>
+    <parent link="base_link"/>
+    <child link="lidar_frame"/>
+    <axis xyz="0.0 0.0 0.0"/>
+    <limit lower="0.0" upper="0.0" effort="0.0" velocity="0.0"/>
+  </joint>
+
+  <link name="lidar_frame">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="0.0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
+    <visual>
+			<origin xyz="0.00 0 0.05" rpy="0 0 0"/>
+            <geometry>
+				  <mesh filename="package://livox_laser_simulation/meshes/standardrobots.STL"/>
+            </geometry>
+    </visual>
+    <collision>
+			<origin xyz="0.00 0 0.05" rpy="0 0 0"/>
+      <geometry>
+			  <mesh filename="package://livox_laser_simulation/meshes/standardrobots.STL"/>
+      </geometry>
+    </collision>
+    <xacro:inertial_matrix mass="1"/>
+		<kinematic>1</kinematic>
+		<gravity>9.8</gravity>
+  </link>
+
+</robot>
