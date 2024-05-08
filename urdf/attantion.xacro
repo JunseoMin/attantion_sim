@@ -540,7 +540,15 @@
         <update_rate>10</update_rate>
         <!-- <plugin name="lidar_plugin" filename="libgazebo_ros_pointcloud.so"> -->
         <!-- <frameName>lidar</frameName> -->
-		    <ray>
+		  
+        <plugin name="gazebo_ros_laser_controller" filename="liblivox_laser_simulation.so">
+          <frameName>lidar</frameName>
+          <visualize>true</visualize>
+		      <samples>${samples}</samples>
+		      <downsample>1</downsample>
+		      <csv_file_name>package://immersion_sim/scan_mode/HAP.csv</csv_file_name>
+		      <ros_topic>scan</ros_topic>
+          <ray>
 		      <scan>
 		    	<horizontal>
 		    	<samples>100</samples>
@@ -566,9 +574,7 @@
 		    	<stddev>${noise_stddev}</stddev>
 		      </noise>
 		    </ray>
-        <plugin name="BLS_1_link_controller" filename="libgazebo_ros_block_laser.so">
-        <topicName>/scan</topicName>
-        <frameName>lidar</frameName>
+      
         </plugin>
 		    <samples>${samples}</samples>
 		    <downsample>${downsample}</downsample>
@@ -601,7 +607,7 @@
     </link>
 
     <joint name="lidar_to_lidar_base_joint" type="fixed">
-      <parent link="lidar_base"/>
+      <parent link="base_link"/>
       <child link="lidar"/>
       <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
     </joint>

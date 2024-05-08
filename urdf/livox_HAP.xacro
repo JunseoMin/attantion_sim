@@ -55,7 +55,7 @@
       <visualize>true</visualize>
 		  <samples>${samples}</samples>
 		  <downsample>1</downsample>
-		  <!-- <csv_file_name>package://immersion_sim/scan_mode/HAP.csv</csv_file_name> -->
+		  <csv_file_name>package://immersion_sim/scan_mode/HAP.csv</csv_file_name>
 		  <ros_topic>${ros_topic}</ros_topic>
         </plugin>
       </sensor>
