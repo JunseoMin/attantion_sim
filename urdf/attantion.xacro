@@ -533,16 +533,14 @@
     </inertial>
   </xacro:macro>
   <xacro:macro name="Livox_Mid_gazebo_sensor" params="visualize:=True update_rate:=10 resolution:=0.002 noise_mean:=0.0 noise_stddev:=0.01 name:=livox">
-    <gazebo reference = "${name}">
-      <sensor type="ray" name="laser_${name}">
+    <gazebo reference="${name}">
+      <sensor type="ray" name="${name}">
         <pose>0 0 0 0 0 0</pose>
         <visualize>true</visualize>
         <update_rate>10</update_rate>
-        <!-- <plugin name="lidar_plugin" filename="libgazebo_ros_pointcloud.so"> -->
-        <!-- <frameName>lidar</frameName> -->
 		  
         <plugin name="gazebo_ros_laser_controller" filename="liblivox_laser_simulation.so">
-          <frameName>lidar</frameName>
+          <!-- <frameName>lidar</frameName> -->
           <visualize>true</visualize>
 		      <samples>${samples}</samples>
 		      <downsample>1</downsample>
@@ -574,22 +572,18 @@
 		    	<stddev>${noise_stddev}</stddev>
 		      </noise>
 		    </ray>
-      
+
         </plugin>
-		    <samples>${samples}</samples>
-		    <downsample>${downsample}</downsample>
-		    <!-- <topicName>/scan</topicName> -->
-        <!-- </plugin> -->
       </sensor>
     </gazebo>
   </xacro:macro>
 
 
   <xacro:macro name="Livox_Mid40" params="visualize:=True name:=livox">
-    <link name="lidar_base">
+    <link name="lidar">
       <xacro:null_inertial/>
       <visual> 
-        <origin xyz="0.00 0 1.0" rpy="0 0 0"/>
+        <origin xyz="0.00 0 0.0" rpy="0 0 0"/>
         <geometry>
           <mesh filename="package://livox_laser_simulation/meshes/livox_mid40.dae">
           </mesh>
@@ -602,15 +596,6 @@
 		  </mesh> </geometry>
       </collision>
     </link>
-    <link name="lidar">
-      <xacro:null_inertial/>
-    </link>
-
-    <joint name="lidar_to_lidar_base_joint" type="fixed">
-      <parent link="base_link"/>
-      <child link="lidar"/>
-      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
-    </joint>
     <xacro:Livox_Mid_gazebo_sensor name="lidar" visualize="true"/>
   </xacro:macro>
   <xacro:Livox_Mid40 name="hap"/>
@@ -618,7 +603,7 @@
   <joint name="base_link_to_lidar_joint" type="fixed">
       <origin xyz="0.0 0.0 0.5" rpy="0.0 0.0 0.0"/>
       <parent link="base_link"/>
-      <child link="lidar_base"/>
+      <child link="lidar"/>
   </joint>
 
   <gazebo>
@@ -626,11 +611,5 @@
       <robotSimType>steer_bot_hardware_gazebo/SteerBotHardwareGazebo</robotSimType>
       <legacyModeNS>false</legacyModeNS>
     </plugin>
-
-    <!-- <joint name="base_link_to_lidar_joint" type="fixed">
-        <parent>base_link</parent>
-        <child>lidar_base</child>
-        <pose>0.0 0.0 0.5 0.0 0.0 1.58</pose> 
-    </joint> -->
   </gazebo>
 </robot>
